@@ -1,0 +1,3 @@
+from .creating_dic import create_dictionary_from_excel
+from .extracting_char import extract_characters
+from .processing_seq import process_sequence
