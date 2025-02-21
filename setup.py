@@ -5,8 +5,8 @@ setup(
     version="0.1",  
     packages=find_packages(),  
     install_requires=[  
-        "pandas",  
-        "rdkit",  
+        "pandas==1.3.5",  # Especificando la versión para evitar incompatibilidades
+        "rdkit==2020.09.1.0",  # Igualmente, especifica la versión exacta de RDKit
     ],
     entry_points={
         "console_scripts": [
@@ -18,6 +18,7 @@ setup(
     description="Un módulo para convertir SMILES a péptidos y análisis de estructuras moleculares",
     long_description=open('README.md').read(),  
     long_description_content_type="text/markdown",  
-    url="https://github.com/tu_usuario/smiles2peptides",  
-    python_requires='>=3.6',  # La versión mínima de Python que soporta tu módulo
+    url="https://github.com/danielgarzonotero/smiles2peptides.git",  
+    python_requires='>=3.7',  # Asegurarse de que funcione con Python 3.7 o superior
 )
+
