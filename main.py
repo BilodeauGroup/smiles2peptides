@@ -34,7 +34,7 @@ def generating_rdkit_mol(sequence, show_display=False):
     return rdkit_mol
 
 
-sequence = "{PEG2[CH2CH2]N3}{h-p}{Pra}{photo-M}{me-T}{nap-A}{acm-c}t{am}"  # Change this sequence as needed
-rdkit_mol = generating_rdkit_mol(sequence, show_display=False)
+""" sequence = "{PEG2[CH2CH2]N3}{h-p}{Pra}{photo-M}{me-T}{nap-A}{acm-c}t{am}"  # Change this sequence as needed
+rdkit_mol = generating_rdkit_mol(sequence, show_display=False) """
 
 # %%

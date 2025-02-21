@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         "console_scripts": [
-            "smiles2peptides=smiles2peptides.main:main",  
+            "smiles2peptides=smiles2peptides.main:generating_rdkit_mol",  
         ],
     },
     author="Daniel Garzon Otero",
