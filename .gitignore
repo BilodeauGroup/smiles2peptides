@@ -1,0 +1,5 @@
+
+# Ignorar archivos de diccionarios y procesados
+*.pt
+*.pth
+*.pyc
