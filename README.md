@@ -1,6 +1,7 @@
 # Smiles2Peptides
 
-![](https://github.com/danielgarzonotero/smiles2peptides/fig/smiles2peptides.gif)
+![](https://github.com/danielgarzonotero/smiles2peptides/blob/master/fig/smiles2peptides.gif)
+
 
 ## Installation Guide
 
