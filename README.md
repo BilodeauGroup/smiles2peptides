@@ -58,8 +58,10 @@ Generates an RDKit molecule from a sequence using the amino acid dictionary.
 mol = generating_rdkit_mol(sequence="DaN{biotin}G{me-T}{a-N3}", show_display=True)
 ```
 ### Peptide Notation
+<img src="fig/LvsD.jpeg" width="800" height="200"/>
 - **L-chirality amino acids** are denoted in **UPPERCASE**.
 - **D-chirality amino acids** are denoted in **lowercase**.
+<img src="fig/nonNatural.jpeg" width="800" height="200"/>
 - **Non-natural amino acids** are enclosed in `{Xyz}`.
 - **Modifications** such as acetylation and amidation are also enclosed in `{}`, e.g., `{ac}` for acetylation and `{am}` for amidation.
 
