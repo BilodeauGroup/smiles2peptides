@@ -1,5 +1,12 @@
 from setuptools import setup, find_packages
 
+# Leer el contenido de README.md si está disponible
+try:
+    with open("README.md", "r", encoding="utf-8") as f:
+        long_description = f.read()
+except FileNotFoundError:
+    long_description = "Un módulo para convertir SMILES a péptidos y análisis de estructuras moleculares"
+
 setup(
     name="smiles2peptides", 
     version="0.1",  
@@ -15,8 +22,10 @@ setup(
     author="Daniel Garzon Otero",
     author_email="vvd9fd@virginia.edu",
     description="Un módulo para convertir SMILES a péptidos y análisis de estructuras moleculares",
-    long_description=open('README.md').read() if 'README.md' in locals() else 'Descripción del paquete',
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/danielgarzonotero/smiles2peptides.git",
     python_requires='>=3.7.16',
 )
+
+
