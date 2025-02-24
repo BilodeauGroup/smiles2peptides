@@ -36,13 +36,10 @@ pip install git+https://github.com/danielgarzonotero/smiles2peptides.git
 Once installed, you can import and use the library in your Python scripts:
 
 ```python
-import smiles2peptides
-# Add usage examples here
+from smiles2peptides.main import generating_rdkit_mol
+
+mol = generating_rdkit_mol(sequence="ACDEFGHI", show_display=True)
 ```
-
-## License
-
-This project is licensed under the MIT License.
 
 ## Author
 
