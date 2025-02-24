@@ -1,0 +1,3 @@
+include smiles2peptides/data.xlsx
+include smiles2peptides/*.xlsx
+include smiles2peptides/*.csv
