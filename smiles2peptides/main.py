@@ -1,10 +1,14 @@
 #%%
-# Import necessary libraries
+import os
+import pandas as pd
 from rdkit import Chem  
 from rdkit.Chem import Draw  
 from IPython.display import display 
-import pandas as pd
 import re
+
+# Obtener la ruta del archivo Excel dentro del paquete
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+EXCEL_PATH = os.path.join(BASE_DIR, "data.xlsx")
 
 
 def create_dictionary_from_excel():
@@ -12,23 +16,15 @@ def create_dictionary_from_excel():
     Reads an Excel file and creates a dictionary where the keys are the values
     from the 'Amino Acid' column and the values are tuples with 'Chirality' and 'SMILE'.
     
-    Args:
-        file_path (str): Path to the Excel file.
-        
     Returns:
         dict: Dictionary with the structure {Amino Acid: (Chirality, SMILE)}.
     """
-    # Read the Excel file
-    df = pd.read_excel('data.xlsx')
-    
-    # Create the dictionary
+    df = pd.read_excel(EXCEL_PATH)  # Usa la ruta dentro del paquete
     dictionary = {
-                    str(row['Amino Acid']).strip():
-                                                    (str(row['Chirality']).strip(),
-                                                    str(row['SMILES']).strip()) 
-                                                    for _, row in df.iterrows()
-                    }
-    
+        str(row['Amino Acid']).strip():
+            (str(row['Chirality']).strip(), str(row['SMILES']).strip()) 
+        for _, row in df.iterrows()
+    }
     return dictionary
 
 def extract_characters(sequence):
@@ -168,7 +164,7 @@ def generating_rdkit_mol(sequence, show_display=False):
     return rdkit_mol
 
 
-sequence = "{PEG2[CH2CH2]N3}{h-p}{Pra}{photo-M}{me-T}{nap-A}{acm-c}t{am}"  # Change this sequence as needed
-rdkit_mol = generating_rdkit_mol(sequence, show_display=True) 
+""" sequence = "{PEG2[CH2CH2]N3}{h-p}{Pra}{photo-M}{me-T}{nap-A}{acm-c}t{am}"  # Change this sequence as needed
+rdkit_mol = generating_rdkit_mol(sequence, show_display=True)  """
 
 # %%
