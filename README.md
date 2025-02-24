@@ -20,8 +20,14 @@ conda activate smiles2peptides
 
 ```sh
 conda install conda-forge/label/cf202003::rdkit
+```
+```sh
 conda install anaconda::pandas
+```
+```sh
 conda install anaconda::ipykernel
+```
+```sh
 conda install anaconda::openpyxl
 ```
 
