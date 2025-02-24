@@ -38,6 +38,17 @@ Once installed, you can import and use the library in your Python scripts:
 ```python
 from smiles2peptides.main import generating_rdkit_mol
 
+"""
+Generates an RDKit molecule from a sequence using the amino acid dictionary.
+    
+    Parameters:
+        sequence (str): The amino acid sequence or components.
+        show_display (bool): If True, displays the generated molecule image.
+    
+    Returns:
+        Chem.Mol: An RDKit molecule representing the full sequence
+"""
+
 mol = generating_rdkit_mol(sequence="DaN{biotin}G{me-T}{a-N3}", show_display=True)
 ```
 ### Peptide Notation
