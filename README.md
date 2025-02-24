@@ -1,5 +1,7 @@
 # Smiles2Peptides
+
 ![](https://github.com/danielgarzonotero/smiles2peptides/fig/smiles2peptides.gif)
+
 ## Installation Guide
 
 Follow the steps below to set up the environment and install the required dependencies for using `smiles2peptides`.
