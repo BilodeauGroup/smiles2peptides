@@ -62,7 +62,7 @@ mol = generating_rdkit_mol(sequence="DaN{biotin}G{me-T}{a-N3}", show_display=Tru
 ```
 ## Peptide Notation
 
-<img src="fig/LvsD.jpeg" width="800" height="300"/>
+<img src="fig/LvsD.jpeg" width="800" height="250"/>
 
 - **L-chirality amino acids** are denoted in **UPPERCASE**.
 
