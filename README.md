@@ -1,4 +1,4 @@
-# smiles2peptides
+# SMILES2PEPTIDES
 
 ## Installation Guide
 
