@@ -10,7 +10,7 @@ setup(
     ],
     include_package_data=True,  # Asegura que se incluyan archivos no Python
     package_data={
-        "smiles2peptides": ["data/data.xlsx"],  # Especifica el archivo a incluir
+        "smiles2peptides": ["data.xlsx"],  # Especifica el archivo a incluir
     },
     author="Daniel Garzon Otero",
     author_email="vvd9fd@virginia.edu",
