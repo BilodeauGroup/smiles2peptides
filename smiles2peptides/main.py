@@ -6,7 +6,7 @@ from rdkit.Chem import Draw
 from IPython.display import display 
 import re
 
-# Obtener la ruta del archivo Excel dentro del paquete
+# Get the path of the amino acid library Excel file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 EXCEL_PATH = os.path.join(BASE_DIR, "amino_acid_library.xlsx")
 

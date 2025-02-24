@@ -38,8 +38,15 @@ Once installed, you can import and use the library in your Python scripts:
 ```python
 from smiles2peptides.main import generating_rdkit_mol
 
-mol = generating_rdkit_mol(sequence="ACDEFGHI", show_display=True)
+mol = generating_rdkit_mol(sequence="DaN{biotin}G{me-T}{a-N3}", show_display=True)
 ```
+### Peptide Notation
+- **L-chirality amino acids** are denoted in **UPPERCASE**.
+- **D-chirality amino acids** are denoted in **lowercase**.
+- **Non-natural amino acids** are enclosed in `{Xyz}`.
+- **Modifications** such as acetylation and amidation are also enclosed in `{}`, e.g., `{ac}` for acetylation and `{am}` for amidation.
+
+For a full list of supported amino acids, refer to **`amino_acid_library.xlsx`**.
 
 ## Author
 
