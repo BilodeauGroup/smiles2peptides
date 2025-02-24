@@ -8,7 +8,7 @@ import re
 
 # Obtener la ruta del archivo Excel dentro del paquete
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-EXCEL_PATH = os.path.join(BASE_DIR, "data.xlsx")
+EXCEL_PATH = os.path.join(BASE_DIR, "amino_acid_library.xlsx")
 
 
 def create_dictionary_from_excel():
@@ -26,6 +26,9 @@ def create_dictionary_from_excel():
         for _, row in df.iterrows()
     }
     return dictionary
+
+
+#Proccesing Sequence Section
 
 def extract_characters(sequence):
     """
@@ -135,6 +138,8 @@ def process_sequence(sequence, dictionary):
         peptide_molecule = Chem.MolFromSmiles(concatenated_smile)
     
     return  peptide_molecule
+
+#Main Function
 
 # Define the main function that generates the RDKit molecule from a sequence
 def generating_rdkit_mol(sequence, show_display=False):
