@@ -3,8 +3,8 @@
 from rdkit import Chem  
 from rdkit.Chem import Draw  
 from IPython.display import display 
-from utils.processing_seq import process_sequence 
-from utils.creating_dic import create_dictionary_from_excel 
+from processing_seq import process_sequence 
+from creating_dic import create_dictionary_from_excel 
 
 # Define the main function that generates the RDKit molecule from a sequence
 def generating_rdkit_mol(sequence, show_display=False):

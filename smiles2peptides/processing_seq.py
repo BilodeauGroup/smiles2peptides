@@ -1,5 +1,5 @@
 from rdkit import Chem
-from utils.extracting_char import extract_characters
+from extracting_char import extract_characters
 
 def process_sequence(sequence, dictionary):
     

@@ -12,7 +12,7 @@ def create_dictionary_from_excel():
         dict: Dictionary with the structure {Amino Acid: (Chirality, SMILE)}.
     """
     # Read the Excel file
-    df = pd.read_excel('data/amino_acids.xlsx')
+    df = pd.read_excel('data.xlsx')
     
     # Create the dictionary
     dictionary = {
