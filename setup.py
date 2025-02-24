@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name="smiles2peptides",
     version="0.1",
-    packages=find_packages(include=["smiles2peptides", "smiles2peptides.*"]),
+    packages=find_packages(include=["smiles2peptides"]),
     install_requires=[
         "pandas>=1.3.5",
         "rdkit>=2023.3.2",
