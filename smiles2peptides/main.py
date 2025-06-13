@@ -167,3 +167,9 @@ def generating_rdkit_mol(sequence, show_display=False):
     
     # Return the generated RDKit molecule
     return rdkit_mol
+
+#%%
+natural_amino_acids = set("ARNDCQEGHILKMFPSTWYVarndcqeghilkmfpstwyv")
+print(natural_amino_acids)
+
+# %%
