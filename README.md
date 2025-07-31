@@ -58,7 +58,7 @@ Generates an RDKit molecule from a sequence using the amino acid dictionary.
         Chem.Mol: An RDKit molecule representing the full sequence
 """
 
-mol = generating_rdkit_mol(sequence="DaN{biotin}G{me-T}{a-N3}", show_display=True)
+mol = generating_rdkit_mol(sequence="DaN{k-biotin}G{me-T}{a-N3}", show_display=True)
 ```
 ## Peptide Notation
 

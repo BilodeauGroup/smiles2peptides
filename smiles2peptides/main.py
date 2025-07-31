@@ -8,20 +8,20 @@ import re
 
 # Get the path of the amino acid library Excel file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-EXCEL_PATH = os.path.join(BASE_DIR, "amino_acid_library.xlsx")
+EXCEL_PATH = os.path.join(BASE_DIR, "amino_acids_v1.xlsx")
 
 
 def create_dictionary_from_excel():
     """
     Reads an Excel file and creates a dictionary where the keys are the values
-    from the 'Amino Acid' column and the values are tuples with 'Chirality' and 'SMILE'.
+    from the 'Notation' column and the values are tuples with 'Chirality' and 'SMILE'.
     
     Returns:
         dict: Dictionary with the structure {Amino Acid: (Chirality, SMILE)}.
     """
     df = pd.read_excel(EXCEL_PATH)  # Usa la ruta dentro del paquete
     dictionary = {
-        str(row['Amino Acid']).strip():
+        str(row['Notation']).strip():
             (str(row['Chirality']).strip(), str(row['SMILES']).strip()) 
         for _, row in df.iterrows()
     }
@@ -168,8 +168,8 @@ def generating_rdkit_mol(sequence, show_display=False):
     # Return the generated RDKit molecule
     return rdkit_mol
 
-#%%
-natural_amino_acids = set("ARNDCQEGHILKMFPSTWYVarndcqeghilkmfpstwyv")
-print(natural_amino_acids)
+
+
+mol = generating_rdkit_mol(sequence="DaN{k-biotin}G{me-T}{a-N3}", show_display=True)
 
 # %%
