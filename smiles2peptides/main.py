@@ -74,9 +74,12 @@ def process_sequence(sequence, dictionary):
             # Check next character
             if index + 1 < len(characters) and characters[index + 1] in dictionary:
                 next_smile = dictionary[characters[index + 1]][1]
-                if re.match(n_pattern, next_smile):
-                    next_smile = next_smile[:1] + special_smile + next_smile[1:]
-                    next_smile = remove_o_if_needed(next_smile, index + 2, characters)
+                match = re.match(n_pattern, next_smile) #it find the N-terminus
+                if match:
+                    prefix = match.group(0) #Select what N-terminus is present
+                    rest = next_smile[len(prefix):] #it gets the rest of SMILE after the N-terminus string
+                    next_smile = prefix + special_smile + rest  #Create the new a.a SMILE with the modificaction
+                    next_smile = remove_o_if_needed(next_smile, index + 2, characters) #Remove the H from the N-Terminus
                     return next_smile, index + 1  # Skip next character
                 else:
                     raise ValueError(f"The SMILE of the character '{characters[index + 1]}' does not start with '[NH2:1]', '[NH1:1]', '[N:1]' o '[NH3:1]'.")
@@ -140,7 +143,7 @@ def process_sequence(sequence, dictionary):
                 smile = remove_o_if_needed(smile, i+1, characters)
                 concatenated_smile += str(smile).strip()
             else:
-                raise ValueError(f"The character '{character}' is not found in the dictionary.")
+                raise ValueError(f"The amino acid '{character}' is not found in the library.")
         
         i += 1  # Increment index after processing
     
@@ -177,7 +180,7 @@ def generating_rdkit_mol(sequence, show_display=False):
     # Process the sequence to convert it into an RDKit molecule
     rdkit_mol = process_sequence(sequence, dictionary)
     
-
+    
     # If displaying is requested and the molecule was successfully generated
     if show_display and rdkit_mol:
         # Usamos el dibujante 2D para poder activar indices
@@ -198,7 +201,7 @@ def generating_rdkit_mol(sequence, show_display=False):
 
 
 peptides = [
-    "{photo-M}Y{(N-me)-A}{3-me-f}r{GlcNAc-T}l",
+    "{PEG2}pr{GlcNAc-T}l{am}",
     "{6-Br-W}{4-hydrox-P}G{me-f}{Pra}nT",
     "v{photo-L}{phospho-Y}l{4-tert-butyl-p}iK",
     "{acm-C}wM{4&5-hydrox-L}{(N-me)-a}{iso-Q}",
@@ -250,13 +253,32 @@ peptides = [
     "{p-carboxyl-f}t{photo-M}K{h-s}{(N-me)-A}"
 ]
 
-
-
+#TODO INCLUIR LAS RESTRICCIONES EN LOS AMINO ACIDOS QUE SOLO PUEDEN ESTAR EN POSICIONES INICIALE O TERMINALES, DEBE SER UNA VERIFACION
 
 for pep in peptides:
     print('----------------------')
     print(pep)
-    mol = generating_rdkit_mol(sequence=pep, show_display=True)
+    mol = generating_rdkit_mol(sequence=pep, show_display=False)
+    # Obtener átomos con map number 1 y 2
+    atoms_map1 = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 1]
+    atoms_map2 = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 2]
+    # Buscar enlaces entre átomos map1 y map2
+    bonds_to_highlight = []
+    for bond in mol.GetBonds():
+        a1 = bond.GetBeginAtomIdx()
+        a2 = bond.GetEndAtomIdx()
+        if (a1 in atoms_map1 and a2 in atoms_map2) or (a1 in atoms_map2 and a2 in atoms_map1):
+            bonds_to_highlight.append(bond.GetIdx())
+    # Colores opcionales para resaltar (rojo brillante)
+    highlight_bond_colors = {idx: (0.0, 1.0, 1.0) for idx in bonds_to_highlight}
+    # Dibujar la molécula resaltando los enlaces
+    img = Draw.MolToImage(
+                        mol,
+                        size=(600, 600),
+                        highlightBonds=bonds_to_highlight,
+                        highlightBondColors=highlight_bond_colors
+                        )
+    display(img)
 
 
 # %%
