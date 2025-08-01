@@ -8,7 +8,7 @@ import re
 
 # Get the path of the amino acid library Excel file
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-EXCEL_PATH = os.path.join(BASE_DIR, "amino_acids_v1.xlsx")
+EXCEL_PATH = os.path.join(BASE_DIR, "amino_acids_v2.xlsx")
 
 
 def create_dictionary_from_excel():
@@ -67,34 +67,52 @@ def process_sequence(sequence, dictionary):
         if character not in dictionary:
             raise ValueError(f"The character '{character}' is not found in the dictionary.")
         
+        # Regex para los posibles inicios
+        n_pattern = r"^\[(NH2|NH1|N|NH3):1\]"
+        
         if index == 0:
             # Check next character
             if index + 1 < len(characters) and characters[index + 1] in dictionary:
                 next_smile = dictionary[characters[index + 1]][1]
-                if next_smile.startswith("N"):
+                if re.match(n_pattern, next_smile):
                     next_smile = next_smile[:1] + special_smile + next_smile[1:]
                     next_smile = remove_o_if_needed(next_smile, index + 2, characters)
                     return next_smile, index + 1  # Skip next character
                 else:
-                    raise ValueError(f"The SMILE of the character '{characters[index + 1]}' does not start with 'N'.")
+                    raise ValueError(f"The SMILE of the character '{characters[index + 1]}' does not start with '[NH2:1]', '[NH1:1]', '[N:1]' o '[NH3:1]'.")
             else:
                 raise ValueError(f"There is no valid character after '{character}'.")
         else:
             # Handle non-first character
             prev_smile = dictionary[characters[index - 1]][1]
-            if prev_smile.startswith("N"):
+            if re.match(n_pattern, prev_smile):
                 prev_smile = prev_smile[:1] + special_smile + prev_smile[1:]
                 prev_smile = remove_o_if_needed(prev_smile, index, characters)
                 return prev_smile, index
             else:
-                raise ValueError(f"The SMILE of the character '{characters[index - 1]}' does not start with 'N'.")
+                raise ValueError(f"The SMILE of the character '{characters[index - 1]}' does not start with '[NH2:1]', '[NH1:1]', '[N:1]' o '[NH3:1]'.")
     
-    def remove_o_if_needed(smile, index, characters):
-        """ Helper function to remove 'O' if the next character is not the last one. """
+    def remove_o_if_needed(smile, index, characters, character=None): # character is optional
+        """ Helper function to remove 'O' if the next character is not the last one.
+            Also performs nitrogen group replacements and warns if [N:1] is present.
+        """
+        # Remove "O" if needed
         if index < len(characters) and smile.endswith("O"):
-            smile = smile[:-1]  # Remove the "O"
+            smile = smile[:-1]
+        # Nitrogen group replacements
+        if index>1:
+            if smile.startswith("[NH2:1]"):
+                smile = smile.replace("[NH2:1]", "[NH1:1]", 1)
+            elif smile.startswith("[NH1:1]"):
+                smile = smile.replace("[NH1:1]", "[N:1]", 1)
+            elif smile.startswith("[NH3:1]"):
+                smile = smile.replace("[NH3:1]", "[NH2:1]", 1)
+            # Warning if starts with [N:1]
+            if smile.startswith("[N:1]"):
+                if character is not None:
+                    print(f"Warning: The amino acid '{character}' cannot form a peptide bond because the nitrogen's bonds are already saturated.")
         return smile
-    
+        
     # Extract characters from the sequence
     characters = extract_characters(sequence)
     
@@ -119,7 +137,7 @@ def process_sequence(sequence, dictionary):
             if character in dictionary:
                 smile = dictionary[character][1] # Get the associated SMILE
                 # Remove "O" if the next character is not the last one
-                smile = remove_o_if_needed(smile, i + 1, characters)
+                smile = remove_o_if_needed(smile, i+1, characters)
                 concatenated_smile += str(smile).strip()
             else:
                 raise ValueError(f"The character '{character}' is not found in the dictionary.")
@@ -159,17 +177,86 @@ def generating_rdkit_mol(sequence, show_display=False):
     # Process the sequence to convert it into an RDKit molecule
     rdkit_mol = process_sequence(sequence, dictionary)
     
+
     # If displaying is requested and the molecule was successfully generated
     if show_display and rdkit_mol:
-        # Convert the RDKit molecule to an 800x800 pixel image
-        img = Draw.MolToImage(rdkit_mol, size=(800, 800))
-        display(img)   
+        # Usamos el dibujante 2D para poder activar indices
+        drawer = Draw.MolDraw2DCairo(800, 800)
+        options = drawer.drawOptions()
+        options.addAtomIndices = False # Muestra los indices de los átomos
+        drawer.DrawMolecule(rdkit_mol)
+        drawer.FinishDrawing()
+        img = drawer.GetDrawingText()
+        
+        # Mostrar en Jupyter
+        from IPython.display import Image, display
+        display(Image(data=img))
     
     # Return the generated RDKit molecule
     return rdkit_mol
 
 
 
-mol = generating_rdkit_mol(sequence="DaN{k-biotin}G{me-T}{a-N3}", show_display=True)
+peptides = [
+    "{photo-M}Y{(N-me)-A}{3-me-f}r{GlcNAc-T}l",
+    "{6-Br-W}{4-hydrox-P}G{me-f}{Pra}nT",
+    "v{photo-L}{phospho-Y}l{4-tert-butyl-p}iK",
+    "{acm-C}wM{4&5-hydrox-L}{(N-me)-a}{iso-Q}",
+    "{4-hydrox-p}{seleno-C}R{trime-L}{3&4-dihydrox-F}G",
+    "K{p-carboxyl-F}{photo-L}c{phospho-Y}{me-f}",
+    "{nor-r}{photo-M}l{GlcNAc-S}H{me-f}",
+    "i{h-s}{(N-me)-A}{Pra}w{acm-C}l",
+    "{C-me}d{p-carboxyl-f}{photo-L}{me-Y}K",
+    "{photo-l}{p-carboxyl-f}m{3-me-f}w{4-hydrox-p}",
+    "a{Pra}{trime-L}y{iso-Q}{photo-M}",
+    "{(N-me)-a}H{3-me-f}{photo-M}l{p-carboxyl-F}",
+    "M{phospho-Y}{4-hydrox-P}d{acm-c}{Pra}",
+    "n{4-hydrox-p}{GlcNAc-S}K{(N-me)-A}{4-tert-butyl-p}",
+    "{succinyl-K}{photo-M}{4-hydrox-p}R{me-f}t",
+    "G{me-F}{Dip-a}{photo-M}{p-carboxyl-f}{4-hydrox-p}",
+    "{seleno-C}v{Pra}{p-carboxyl-F}{GlcNAc-T}w",
+    "p{photo-L}{me-f}{trime-L}K{3&4-dihydrox-F}",
+    "{4-hydrox-P}y{iso-Q}{photo-M}{h-S}F",
+    "W{p-carboxyl-f}M{photo-M}q{C-me}",
+    "{phospho-S}{4-hydrox-p}l{succinyl-K}{3-me-f}V",
+    "{photo-l}{seleno-C}{(N-me)-A}{4-hydrox-P}dF",
+    "c{me-y}{photo-M}{3&4-dihydrox-F}{acm-C}t",
+    "{GlcNAc-asn}{photo-M}n{h-S}{4-tert-butyl-p}l",
+    "{iso-D}p{Pra}{me-f}H{p-carboxyl-F}",
+    "{acm-c}{4-hydrox-P}G{(N-me)-A}R{photo-M}",
+    "{4-hydrox-p}{photo-L}{succinyl-K}y{3-me-f}t",
+    "L{me-f}{photo-M}{4&5-hydrox-L}m{iso-Q}",
+    "{trime-L}H{4-hydrox-p}{photo-l}{C-me}d",
+    "{Pra}{seleno-C}{4-hydrox-p}n{phospho-Y}L",
+    "t{acm-C}{photo-M}{me-f}{4-tert-butyl-p}k",
+    "{4-hydrox-p}V{3-me-f}{iso-Q}{photo-l}y",
+    "{4-hydrox-P}{photo-M}{C-me}H{acm-c}m",
+    "{succinyl-K}{photo-M}{p-carboxyl-f}{h-s}T",
+    "F{3-me-f}{4-hydrox-p}{me-f}{Pra}w",
+    "{photo-l}n{4&5-hydrox-L}M{trime-L}y",
+    "{photo-M}{me-f}{phospho-Y}{4-hydrox-p}G{C-me}",
+    "L{p-carboxyl-F}{photo-L}{Pra}h{iso-Q}",
+    "{(N-me)-a}{seleno-C}{photo-M}R{4-hydrox-p}w",
+    "{phospho-S}{photo-l}{4-hydrox-P}{3-me-f}yM",
+    "{photo-L}F{h-s}{GlcNAc-T}{Pra}c",
+    "{trime-L}{4-hydrox-p}y{photo-M}{me-f}k",
+    "R{(N-me)-A}{4-hydrox-p}{Pra}{4-tert-butyl-p}l",
+    "a{photo-M}{me-F}{4-hydrox-p}{succinyl-K}n",
+    "K{4-hydrox-p}{photo-l}q{(N-me)-a}{iso-Q}",
+    "{4-hydrox-P}{Pra}{acm-C}{photo-M}Lw",
+    "{photo-l}{C-me}G{p-carboxyl-f}{me-f}d",
+    "{photo-M}{4-hydrox-p}{GlcNAc-asn}R{3-me-f}v",
+    "{me-y}{photo-L}{4-hydrox-P}{succinyl-K}F",
+    "{p-carboxyl-f}t{photo-M}K{h-s}{(N-me)-A}"
+]
+
+
+
+
+for pep in peptides:
+    print('----------------------')
+    print(pep)
+    mol = generating_rdkit_mol(sequence=pep, show_display=True)
+
 
 # %%
