@@ -31,7 +31,7 @@ class AminoAcidDictionary:
         - Iterate over all entries or get a full copy of the dictionary.
     """
     
-    def __init__(self, excel_path=None):
+    def __init__(self, dictionary_path_file=None):
         """
         Initializes the dictionary by loading data from the specified Excel file.
         If no file path is provided, loads from a default file named 'amino_acids_v4.xlsx' 
@@ -41,11 +41,11 @@ class AminoAcidDictionary:
             excel_path (str, optional): Path to the Excel file containing amino acid data.
         """
         
-        if excel_path is None:
+        if dictionary_path_file is None:
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            excel_path = os.path.join(base_dir, "amino_acids_v4.xlsx")
+            dictionary_path_file = os.path.join(base_dir, "amino_acids_v4.xlsx")
         
-        self.excel_path = excel_path
+        self.excel_path = dictionary_path_file
         self._dictionary = self._load_dictionary()
     
     def _load_dictionary(self):
@@ -245,6 +245,125 @@ class PeptideUtils:
         if exception_value == 3 and position != 0:
             raise ValueError(f"Error: The modification {character} can only be placed at the beginning.")
 
+class AminoAcidUtils:
+    """
+    Utility class for handling peptide bonds in RDKit molecules.
+    Provides methods to identify, highlight, and display peptide bonds.
+    
+    """
+    @staticmethod
+    def get_peptide_bonds(mol):
+        """
+        Identifies peptide bonds in a molecule based on atomMap numbers.
+        Peptide bonds are defined as bonds between atoms with atomMap numbers 1 and 2.
+        
+        Args:
+            mol (Chem.Mol): RDKit molecule object.
+        
+        Returns:
+            list: List of bond indices that are identified as peptide bonds.
+        
+        Raises:
+            ValueError: If the molecule does not contain atoms with atomMap numbers 1 or 2.
+        """
+        # Get atom indices with atomMap numbers 1 and 2 (used to identify peptide bonds)
+        atoms_map1 = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 1]
+        atoms_map2 = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 2]
+        
+        # Raise error if either list is empty
+        if not atoms_map1:
+            raise ValueError("No atoms found with atomMapNum 1 in the molecule.")
+        if not atoms_map2:
+            raise ValueError("No atoms found with atomMapNum 2 in the molecule.")
+        
+        # Identify bonds connecting atoms from map1 to map2 — i.e., peptide bonds
+        peptidic_bonds = []
+        for bond in mol.GetBonds():
+            a1 = bond.GetBeginAtomIdx()
+            a2 = bond.GetEndAtomIdx()
+            if (a1 in atoms_map1 and a2 in atoms_map2) or (a1 in atoms_map2 and a2 in atoms_map1):
+                peptidic_bonds.append(bond.GetIdx())
+        
+        return peptidic_bonds
+    
+    @staticmethod
+    def highlight_peptide_bonds(mol, peptidic_bonds):
+        """ 
+        Highlights peptide bonds in a molecule by displaying them in a different color.
+        
+        Args:
+            mol (Chem.Mol): RDKit molecule object.
+            peptidic_bonds (list): List of bond indices that are peptide bonds.
+        Returns:
+            None: Displays the molecule with highlighted peptide bonds.
+        Raises:
+            ValueError: If the list of peptide bonds is empty.
+        
+        """
+        # Raise error if either list is empty
+        if not peptidic_bonds:
+            raise ValueError("No peptide bonds found to highlight.")
+        
+        # Optional: highlight identified peptide bonds (cyan color)
+        highlight_bond_colors = {idx: (0.0, 1.0, 1.0) for idx in peptidic_bonds}
+        
+        # Display the molecule with highlighted peptide bonds
+        img = Draw.MolToImage(
+                            mol,
+                            size=(600, 600),
+                            highlightBonds=peptidic_bonds,
+                            highlightBondColors=highlight_bond_colors
+                            )
+        display(img)
+    
+    @staticmethod
+    def display_amino_acids(mol, peptidic_bonds):
+        """
+        Displays the amino acids in a molecule by highlighting them.
+        
+        Args:
+            mol (Chem.Mol): RDKit molecule object.
+            peptidic_bonds (list): List of bond indices that are peptide bonds.
+        
+        Returns:
+            None: Displays the molecule with highlighted amino acids.
+        """
+        # Fragment the molecule at the peptide bonds without adding dummy atoms
+        amino_acids = Chem.FragmentOnBonds(mol, peptidic_bonds, addDummies=False)
+        
+        # Display the resulting fragments
+        img = Draw.MolToImage(amino_acids, size=(600, 600))
+        display(img)
+        
+        return amino_acids
+    
+    @staticmethod
+    # Fragment the molecule at the peptide bonds
+    def get_amino_acid_fragments_vector(mol, peptidic_bonds):
+        """ 
+        Creates a tensor that maps each atom in the molecule to its corresponding amino acid fragment index.
+        Ideal for scatter processing in PyTorch.
+        This method fragments the molecule at the peptide bonds and assigns each atom to its corresponding fragment index.
+        Args:
+            mol (Chem.Mol): RDKit molecule object.
+            peptidic_bonds (list): List of bond indices that are peptide bonds. 
+        Returns:
+            torch.Tensor: A tensor of shape (num_atoms,) mapping each atom to its amino acid index.
+        """
+        amino_acids = Chem.FragmentOnBonds(mol, peptidic_bonds, addDummies=False)
+        
+        # Extract individual fragments (amino acids)
+        fragments = list(Chem.GetMolFrags(amino_acids, asMols=True))
+        
+        # Create a vector assigning each atom to its corresponding fragment index
+        peptide_idx = []
+        for i, frag in enumerate(fragments):
+            num_atoms = frag.GetNumAtoms()
+            peptide_idx.extend([i] * num_atoms)
+
+        amino_acid_fragments_vector = torch.tensor(peptide_idx, dtype=torch.long)
+        
+        return amino_acid_fragments_vector
 
 
 class PeptideBuilder:
@@ -252,13 +371,10 @@ class PeptideBuilder:
     Class responsible for constructing a peptide molecule from a given sequence.
     Optionally displays a visual representation of the resulting molecule.
     """   
-    _dictionary = AminoAcidDictionary()  # load once when defining the class
-    
     @staticmethod
     def peptide_builder(sequence, show_display=False, amino_acid_library=None):
         sequence = sequence.replace('\u200b', '').replace(' ', '')
         characters = PeptideUtils.extract_characters(sequence)
-        amino_acid_library = PeptideBuilder._dictionary.as_dict()
         
         concatenated_smile = ""
         
@@ -301,85 +417,54 @@ class PeptideBuilder:
         if show_display and mol:
             PeptideUtils.show_molecule(mol)
         
-        
         return mol
 
 
-def amino_acid_handling(mol,
-                        highlight_bonds=False,
-                        obtain_amino_acids=False,
-                        get_fragment_amino_acid_vector=False): 
-    """
-    Handles peptide bond processing in a molecule by identifying peptide bonds (atomMap 1 and 2) 
-    and optionally performing visualization or fragment extraction.
 
-    Parameters:
-        mol (Chem.Mol): RDKit molecule object.
-        highlight_bonds (bool): If True, highlights peptidic bonds in the molecule.
-        obtain_amino_acids (bool): If True, returns the molecule fragmented at peptidic bonds.
-        get_fragment_amino_acid_vector (bool): If True, returns a tensor mapping each atom to its amino acid fragment.
-
-    Returns:
-        Chem.Mol (optional): Fragmented molecule if `obtain_amino_acids` is True.
-        torch.Tensor (optional): Vector assigning each atom to a fragment index if `get_fragment_amino_acid_vector` is True.
+class AminoAcidBuilder:
     """
+    Class for handling peptide bond processing in RDKit molecules.
+    Provides methods to identify peptide bonds, highlight them, and optionally fragment the molecule.
+    """
+    @staticmethod
+    def amino_acid_plotting(mol,
+                            highlight_bonds=False,
+                            obtain_amino_acids=False,
+                            ): 
+        """
+        Handles peptide bond processing in a molecule by identifying peptide bonds (atomMap 1 and 2) 
+        and optionally performing visualization or fragment extraction.
+        
+        Parameters:
+            mol (Chem.Mol): RDKit molecule object.
+            highlight_bonds (bool): If True, highlights peptidic bonds in the molecule. defaults = False.
+            obtain_amino_acids (bool): If True, returns the molecule fragmented at peptidic bonds. defaults = False.
+        Returns:
+            Chem.Mol (optional): Fragmented molecule if `obtain_amino_acids` is True.
+            torch.Tensor (optional): Vector assigning each atom to a fragment index if `get_fragment_amino_acid_vector` is True.
+        """
+        
+        peptidic_bonds = AminoAcidUtils.get_peptide_bonds(mol)
+        
+        if highlight_bonds:
+            AminoAcidUtils.highlight_peptide_bonds(mol, peptidic_bonds)
+            
+        if obtain_amino_acids:
+            AminoAcidUtils.display_amino_acids(mol, peptidic_bonds)
     
-    # Get atom indices with atomMap numbers 1 and 2 (used to identify peptide bonds)
-    atoms_map1 = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 1]
-    atoms_map2 = [atom.GetIdx() for atom in mol.GetAtoms() if atom.GetAtomMapNum() == 2]
-    
-    # Identify bonds connecting atoms from map1 to map2 — i.e., peptide bonds
-    peptidic_bonds = []
-    for bond in mol.GetBonds():
-        a1 = bond.GetBeginAtomIdx()
-        a2 = bond.GetEndAtomIdx()
-        if (a1 in atoms_map1 and a2 in atoms_map2) or (a1 in atoms_map2 and a2 in atoms_map1):
-            peptidic_bonds.append(bond.GetIdx())
-    
-    if highlight_bonds:
-        # Optional: highlight identified peptide bonds (cyan color)
-        highlight_bond_colors = {idx: (0.0, 1.0, 1.0) for idx in peptidic_bonds}
+    @staticmethod
+    def get_amino_acid_mapping_vector(mol, peptidic_bonds):
+        """ Returns a tensor mapping each atom to its amino acid fragment."""
         
-        # Display the molecule with highlighted peptide bonds
-        img = Draw.MolToImage(
-            mol,
-            size=(600, 600),
-            highlightBonds=peptidic_bonds,
-            highlightBondColors=highlight_bond_colors
-        )
-        display(img)
+        peptidic_bonds = AminoAcidUtils.get_peptide_bonds(mol)
         
-    if obtain_amino_acids:
-        # Fragment the molecule at the peptide bonds without adding dummy atoms
-        amino_acids = Chem.FragmentOnBonds(mol, peptidic_bonds, addDummies=False)
-        
-        # Display the resulting fragments
-        img = Draw.MolToImage(amino_acids, size=(600, 600))
-        display(img)
-        
-        return amino_acids
-    
-    if get_fragment_amino_acid_vector:
-        # Fragment the molecule at the peptide bonds
-        amino_acids = Chem.FragmentOnBonds(mol, peptidic_bonds, addDummies=False)
-        
-        # Extract individual fragments (amino acids)
-        fragments = list(Chem.GetMolFrags(amino_acids, asMols=True))
-        
-        # Create a vector assigning each atom to its corresponding fragment index
-        peptide_idx = np.empty(0)
-        for i, frag in enumerate(fragments):
-            num_atoms = frag.GetNumAtoms()
-            idx_vector = np.ones(num_atoms) * i
-            peptide_idx = np.concatenate((peptide_idx, idx_vector))
-        
-        amino_acid_fragments_vector = torch.tensor(peptide_idx.tolist(), dtype=torch.long)
-        
-        return amino_acid_fragments_vector
+        return AminoAcidUtils.get_amino_acid_fragments_vector(mol, peptidic_bonds)
+
+
 
 
 peptides = [
-    "{FITC-Ahx}{Pra}{PEG2}nT",
+    "{pra}{FITC-Ahx}{Pra}nT",
     "{PEG2}pr{GlcNAc-T}l",
     "v{photo-L}{phospho-Y}l{4-tert-butyl-p}iK",
     "{acm-C}wM{4&5-hydrox-L}{(N-me)-a}{iso-Q}",
@@ -432,10 +517,84 @@ peptides = [
 ]
 
 
+
+class Smiles2Peptide:
+    """
+    Central interface for peptide construction and amino acid analysis using RDKit.
+    Combines functionality from PeptideBuilder and AminoAcidBuilder.
+    """
+    
+    def __init__(self, custom_dict_path=None):
+        
+        """
+        Initializes the Smiles2Peptide class with optional dictionary path.
+        If no path is provided, it defaults to loading the standard amino acid dictionary.
+        Args:
+            dict_path (str, optional): Path to the amino acid dictionary Excel file.
+        Initializes the PeptideBuilder and AminoAcidBuilder classes.
+        Initializes the amino acid dictionary from the specified path or defaults to the standard dictionary.
+        """
+        
+        self.peptide_builder = PeptideBuilder
+        self.amino_acid_builder = AminoAcidBuilder
+        
+        if custom_dict_path:
+            self.dictionary = AminoAcidDictionary(custom_dict_path).as_dict()
+        else:
+            self.dictionary = AminoAcidDictionary().as_dict()
+        
+        
+    def build_peptide(self, sequence, plot_peptide=False, amino_acid_library=None):
+        """
+        Build a peptide molecule from a sequence.
+        
+        Args:
+            sequence (str): Peptide sequence.
+            show_display (bool): Whether to visualize the molecule.
+        
+        Returns:
+            Chem.Mol: RDKit molecule.
+        """
+        return self.peptide_builder.peptide_builder(sequence, plot_peptide, amino_acid_library=self.dictionary)
+    
+    def plot_aminoacids(self, mol, highlight_bonds=False, obtain_amino_acids=False):
+        """
+        Visualize or fragment the peptide molecule.\
+        
+        Args:
+            mol (Chem.Mol): RDKit molecule.
+            highlight_bonds (bool): Highlight peptide bonds.
+            obtain_amino_acids (bool): Display amino acid fragments.
+        """
+        return self.amino_acid_builder.amino_acid_plotting(mol, highlight_bonds, obtain_amino_acids)
+    
+    def get_fragment_mapping(self, mol):
+        """
+        Get a tensor mapping each atom to its amino acid fragment.
+        
+        Args:
+            mol (Chem.Mol): RDKit molecule.
+        
+        Returns:
+            torch.Tensor: Mapping vector.
+        """
+        return self.amino_acid_builder.get_amino_acid_mapping_vector(mol, None)
+
+
+
+
 for pep in peptides:
     print('----------------------')
     print(pep)
-    mol = PeptideBuilder.peptide_builder(pep, show_display=True)
-    amino_acids = amino_acid_handling(mol, get_fragment_amino_acid_vector=True)
-    print(amino_acids)
+    smiles2peptides = Smiles2Peptide() #aqui se instancia la clase para manejar peptidos, se puede usar ademas un diccionario personalizado
+    
+    mol = smiles2peptides.build_peptide(pep, plot_peptide=True)
+    
+    smiles2peptides.plot_aminoacids(mol, highlight_bonds=True, obtain_amino_acids=True)
+    
+    print("Amino Acid mapping Vector:", smiles2peptides.get_fragment_mapping(mol))
+    
+
+
+
 # %%
