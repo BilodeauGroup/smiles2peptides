@@ -1,8 +1,8 @@
 #%%
-from smiles2peptides.core.peptide_builder import PeptideBuilder
-from smiles2peptides.core.amino_acid_builder import AminoAcidBuilder
-from smiles2peptides.core.library import AminoAcidDictionary
-from smiles2peptides.utils.peptide_utils import PeptideUtils
+from project.core.peptide_builder import PeptideBuilder
+from project.core.amino_acid_builder import AminoAcidBuilder
+from project.core.library import AminoAcidDictionary
+from project.utils.peptide_utils import PeptideUtils
 
 
 class Smiles2Peptide:
