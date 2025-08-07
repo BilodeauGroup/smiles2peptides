@@ -78,25 +78,8 @@ Important: The custom dictionary must follow the expected structure, with amino 
 This structure ensures the peptide builder can interpret and construct molecules correctly.
 
 ## Example usage:
-```python
-# Instantiate (load default amino acid dictionary)
-smiles2pep = Smiles2Peptide()
 
-# Build a peptide molecule from a sequence
-mol = smiles2pep.get_peptide("ACDEFGHIKLMNPQRSTVWY")
-
-# Show atomic features tensor shape
-smiles2pep.describe_peptide_atomic_features(mol)
-
-# Visualize amino acid fragments in the peptide
-smiles2pep.get_plot_aminoacids(mol, highlight_bonds=True)
-
-# Get adjacency matrix at atomic level
-adj_matrix = smiles2pep.get_peptide_atomic_adjacency_matrix(mol)
-
-# Get amino acid features tensor
-aa_features = smiles2pep.get_amino_acid_features("ACDEFGHIKLMNPQRSTVWY")
-```
+For a full usage example, please see the [examples.ipynb](examples.ipynb) notebook included in this repository.
 
 
 ## Peptide Notation
