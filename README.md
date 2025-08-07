@@ -33,6 +33,13 @@ conda install anaconda::ipykernel
 ```sh
 conda install anaconda::openpyxl
 ```
+```sh
+conda install pytorch::pytorch
+```
+```sh
+conda install conda-forge::scikit-learn
+```
+
 
 ### 4. Install `smiles2peptides`
 
