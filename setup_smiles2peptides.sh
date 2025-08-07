@@ -25,6 +25,6 @@ echo "[INFO] Installing ipykernel..."
 pip install ipykernel
 
 echo "[INFO] Installing smiles2peptides package from GitHub..."
-pip install git+https://github.com/danielgarzonotero/smiles2peptides.git
+pip install git+https://github.com/BilodeauGroup/smiles2peptides.git
 
 echo "[INFO] Setup complete. You have now the 'smiles2peptides' environment ready to use."

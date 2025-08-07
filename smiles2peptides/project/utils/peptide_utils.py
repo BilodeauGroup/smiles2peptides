@@ -127,6 +127,8 @@ class PeptideUtils:
             raise ValueError(f"Error: {character} can only be at the end.")
         if exception_value == 3 and position != 0:
             raise ValueError(f"Error: The modification {character} can only be placed at the beginning.")
+        if exception_value == 4 and position != last_position:
+            raise ValueError(f"Error: The modification {character} must be the last element.")
     
     @staticmethod
     def util_atomic_features(amino_acids_mol):
