@@ -16,7 +16,7 @@ setup(
     ],
     include_package_data=True, 
     package_data={
-        "smiles2peptides": ["amino_acid_library.xlsx"], 
+        "smiles2peptides": ["project/core/amino_acid_library.xlsx"]
     },
     author="Daniel Garzon Otero",
     author_email="vvd9fd@virginia.edu",

@@ -1,2 +1,2 @@
-from .main import Smiles2Peptide
+from .interface import Smiles2Peptide
 
