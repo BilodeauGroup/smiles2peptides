@@ -21,8 +21,8 @@ conda install --yes anaconda::openpyxl
 echo "[INFO] Installing scikit-learn from conda-forge..."
 conda install --yes conda-forge::scikit-learn
 
-echo "[INFO] Installing ipykernel from anaconda..."
-conda install --yes anaconda::ipykernel
+echo "[INFO] Installing ipykernel..."
+pip install ipykernel
 
 echo "[INFO] Installing smiles2peptides package from GitHub..."
 pip install git+https://github.com/danielgarzonotero/smiles2peptides.git
