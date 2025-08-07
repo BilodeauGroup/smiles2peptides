@@ -12,14 +12,14 @@ echo "[INFO] Environment activated."
 echo "[INFO] Installing RDKit from conda-forge/label/cf202003..."
 conda install --yes conda-forge/label/cf202003::rdkit
 
-echo "[INFO] Installing PyTorch from pytorch channel..."
-conda install --yes pytorch::pytorch
+echo "[INFO] Installing PyTorch from:..."
+pip3 install torch torchvision
 
 echo "[INFO] Installing Openpyxl from anaconda..."
-conda install --yes anaconda::openpyxl
+pip install openpyxl
 
-echo "[INFO] Installing scikit-learn from conda-forge..."
-conda install --yes conda-forge::scikit-learn
+echo "[INFO] Installing scikit-learn..."
+pip install scikit-learn
 
 echo "[INFO] Installing ipykernel..."
 pip install ipykernel
