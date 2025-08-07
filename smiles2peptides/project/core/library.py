@@ -41,7 +41,7 @@ class AminoAcidDictionary:
         Returns:
             dict: Mapping from amino acid notation (str) to a tuple containing (Chirality (str), SMILES (str), Exception (str), Type (str)).
         """
-        df = pd.read_excel(self.excel_path)
+        df = pd.read_excel(self.excel_path, engine='openpyxl')
         
         required_columns = {'Notation', 'Chirality', 'SMILES', 'Exception', 'Type'}
         if not required_columns.issubset(df.columns):
