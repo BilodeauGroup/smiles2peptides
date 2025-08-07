@@ -35,10 +35,9 @@ class PeptideBuilder:
                 i = new_i  
             elif exception_value == 4:
                 if character == "{am}":
-                    next_smile = amino_acid_library[character][1]
-                    concatenated_smile += next_smile
+                    smile = amino_acid_library[character][1]
+                    concatenated_smile += smile
                 #TODO lógica pendiente para otros casos
-                pass
             else:
                 smile = amino_acid_library[character][1]
                 smile = PeptideUtils.util_removing_O_and_H(smile, i + 1, characters, character)
