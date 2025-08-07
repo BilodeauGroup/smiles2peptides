@@ -124,4 +124,6 @@ class AminoAcidDictionary:
                 k for k, v in self._dictionary.items()
                 if len(v) > 3 and v[3] == "Amino Acid"
                 ]
+
+
         

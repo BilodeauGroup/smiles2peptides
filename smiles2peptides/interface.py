@@ -36,16 +36,20 @@ class Smiles2Peptide:
         """
         aa_dict_instance = AminoAcidDictionary(custom_dict_path) if custom_dict_path else AminoAcidDictionary()
         self.dictionary = aa_dict_instance.as_dict()
+        
         self.amino_acids = aa_dict_instance.get_all_amino_acids_notations()
+        self.master_peptide = ['{ac}' + 'HRKIFLWAMPCNVGSQYDET' + '{am}']  # Master peptide sequence composed of L-amino acids, including N-terminal acetylation ({ac}) and C-terminal amidation ({am}). These modifications are important if you want to account for terminal groups in the atomic-level features.
+
         
     def _build_amino_acids_mol(self):
         """ 
         Constructs RDKit molecule objects for each amino acid in the dictionary.
         Returns:
             list: List of RDKit molecule objects for each amino acid.
-        """
+        """ 
         amino_acids_mol = []
-        for aa in self.amino_acids:
+        
+        for aa in (self.amino_acids+self.master_peptide):
             mol = self.peptide_builder.builder_peptide(
                                                         sequence=aa,
                                                         show_display=False,
