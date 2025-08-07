@@ -207,3 +207,6 @@ class Smiles2Peptide:
             device (str or torch.device): Device to store the resulting tensor (e.g., 'cpu' or 'cuda'). Default is 'cpu'.
         """
         return self.amino_acid_builder.builder_amino_acid_features(sequence, self.dictionary, device)
+    
+    
+
