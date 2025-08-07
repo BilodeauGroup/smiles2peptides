@@ -1,4 +1,4 @@
-from project.utils.amino_acid_utils import  AminoAcidUtils
+from smiles2peptides.project.utils.amino_acid_utils import  AminoAcidUtils
 
 
 class AminoAcidBuilder:

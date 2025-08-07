@@ -1,10 +1,7 @@
 #%%
-from project.core.peptide_builder import PeptideBuilder
-from project.core.amino_acid_builder import AminoAcidBuilder
-from project.core.library import AminoAcidDictionary
-
-
-
+from smiles2peptides.project.core.peptide_builder import PeptideBuilder
+from smiles2peptides.project.core.amino_acid_builder import AminoAcidBuilder
+from smiles2peptides.project.core.library import AminoAcidDictionary
 
 class Smiles2Peptide:
     """

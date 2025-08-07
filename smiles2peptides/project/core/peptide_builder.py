@@ -1,7 +1,7 @@
 import pandas as pd
 from rdkit import Chem  
 
-from project.utils.peptide_utils import PeptideUtils
+from smiles2peptides.project.utils.peptide_utils import PeptideUtils
 
 
 class PeptideBuilder:
