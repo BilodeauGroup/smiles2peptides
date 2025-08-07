@@ -29,7 +29,7 @@ class AminoAcidDictionary:
         
         if dictionary_path_file is None:
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            dictionary_path_file = os.path.join(base_dir, "amino_acids_v4.xlsx")
+            dictionary_path_file = os.path.join(base_dir, "amino_acids_library.xlsx")
         
         self.excel_path = dictionary_path_file
         self._dictionary = self._load_dictionary()

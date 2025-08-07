@@ -25,20 +25,20 @@ conda activate smiles2peptides
 conda install conda-forge/label/cf202003::rdkit
 ```
 ```sh
-conda install anaconda::pandas
-```
-```sh
-conda install anaconda::ipykernel
+conda install pytorch::pytorch
 ```
 ```sh
 conda install anaconda::openpyxl
 ```
 ```sh
-conda install pytorch::pytorch
-```
-```sh
 conda install conda-forge::scikit-learn
 ```
+```sh
+conda install anaconda::ipykernel
+```
+
+
+
 
 
 ### 4. Install `smiles2peptides`

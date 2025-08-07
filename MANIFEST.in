@@ -1,3 +1,2 @@
-include smiles2peptides/amino_acid_library.xlsx
-include smiles2peptides/*.xlsx
-include smiles2peptides/*.csv
+include smiles2peptides/project/core/amino_acid_library.xlsx
+
