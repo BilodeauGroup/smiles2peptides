@@ -4,7 +4,7 @@
 
 ## Installation Guide
 
-To create the environment with all required packages, simply download the file: **`setup_smiles2peptides.shp_env.sh`** and run the following script in your terminal:
+To create the environment with all required packages, simply download the file: **`setup_smiles2peptides.sh`** and run the following script in your terminal:
 
 ```sh
 bash setup_smiles2peptides.shp_env.sh 
