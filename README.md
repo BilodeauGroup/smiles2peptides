@@ -4,7 +4,7 @@
 
 ## Installation Guide
 
-To create the environment with all required packages, simply download and run the following script in your terminal:
+To create the environment with all required packages, simply download the file: 'setup_smiles2peptides.shp_env.sh' and run the following script in your terminal:
 
 ```sh
 bash setup_smiles2peptides.shp_env.sh 
@@ -29,16 +29,16 @@ conda activate smiles2peptides
 conda install conda-forge/label/cf202003::rdkit
 ```
 ```sh
-conda install pytorch::pytorch
+pip3 install torch torchvision
 ```
 ```sh
-conda install anaconda::openpyxl
+pip install openpyxl
 ```
 ```sh
-conda install conda-forge::scikit-learn
+pip install scikit-learn
 ```
 ```sh
-conda install anaconda::ipykernel
+pip install ipykernel
 ```
 ```sh
 pip install https://github.com/BilodeauGroup/smiles2peptides.git
