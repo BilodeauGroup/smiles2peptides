@@ -26,7 +26,7 @@ conda activate smiles2peptides
 ### 3. Install Dependencies
 
 ```sh
-conda install conda-forge/label/cf202003::rdkit
+pip install rdkit
 ```
 ```sh
 pip3 install torch torchvision
@@ -39,6 +39,9 @@ pip install scikit-learn
 ```
 ```sh
 pip install ipykernel
+```
+```sh
+pip install pandas
 ```
 ```sh
 pip install https://github.com/BilodeauGroup/smiles2peptides.git

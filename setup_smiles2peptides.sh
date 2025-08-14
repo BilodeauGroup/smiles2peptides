@@ -10,7 +10,7 @@ conda activate smiles2peptides
 echo "[INFO] Environment activated."
 
 echo "[INFO] Installing RDKit from conda-forge/label/cf202003..."
-conda install --yes conda-forge/label/cf202003::rdkit
+pip install rdkit
 
 echo "[INFO] Installing PyTorch from:..."
 pip3 install torch torchvision
@@ -23,6 +23,9 @@ pip install scikit-learn
 
 echo "[INFO] Installing ipykernel..."
 pip install ipykernel
+
+echo "[INFO] Installing pandas...
+pip install pandas
 
 echo "[INFO] Installing smiles2peptides package from GitHub..."
 pip install git+https://github.com/BilodeauGroup/smiles2peptides.git
