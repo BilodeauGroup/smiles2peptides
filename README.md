@@ -44,7 +44,7 @@ pip install ipykernel
 pip install pandas
 ```
 ```sh
-pip install https://github.com/BilodeauGroup/smiles2peptides.git
+pip install git+https://github.com/BilodeauGroup/smiles2peptides.git
 ```
 
 ## Usage
