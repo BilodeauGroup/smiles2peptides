@@ -95,7 +95,8 @@ class PeptideUtils:
                     next_smile = PeptideUtils.util_removing_O_and_H(next_smile, index + 2, characters)
                     return next_smile, index + 1
                 else:
-                    raise ValueError(f"The SMILE of the character '{characters[index + 1]}' does not start with a valid N-terminus group.")
+                    raise ValueError(
+                        f"The SMILE of the character '{characters[index + 1]}' does not start with a valid N-terminus group.")
             else:
                 raise ValueError(f"There is no valid character after '{character}'.")
         else:

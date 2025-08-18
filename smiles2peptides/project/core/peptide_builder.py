@@ -17,8 +17,11 @@ class PeptideBuilder:
         concatenated_smile = ""
         
         last_index = len(characters) - 1
-        
-        for i, character in enumerate(characters):
+        i = 0  # Index to iterate over the characters
+            
+        while i < len(characters):
+            character = characters[i]
+            
             if character not in amino_acid_library:
                 raise ValueError(f"The amino acid '{character}' is not found in the dictionary.")
             
@@ -42,6 +45,8 @@ class PeptideBuilder:
                 smile = amino_acid_library[character][1]
                 smile = PeptideUtils.util_removing_O_and_H(smile, i + 1, characters, character)
                 concatenated_smile += smile.strip()
+            
+            i += 1 
         
         concatenated_smile = concatenated_smile.replace('\u200b', '').replace(' ', '')
         
