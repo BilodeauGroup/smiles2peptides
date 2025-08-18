@@ -201,7 +201,7 @@ class Smiles2Peptide:
         Returns:
             torch.Tensor: Adjacency matrix.
         """
-        return self.amino_acid_builder.builder_amino_acid_adjacency_matrix(sequence, device, architecture)
+        return self.amino_acid_builder.builder_amino_acid_adjacency_matrix(sequence, device, architecture, amino_acid_library=self.dictionary)
     
     def get_amino_acid_features(self, sequence, device='cpu'):
         """

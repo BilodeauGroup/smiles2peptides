@@ -44,7 +44,7 @@ class AminoAcidBuilder:
     
     
     @staticmethod
-    def builder_amino_acid_adjacency_matrix(sequence, device, architecture):
+    def builder_amino_acid_adjacency_matrix(sequence, device, architecture, amino_acid_library):
         """
         Constructs an adjacency matrix for a peptide sequence, representing linear connections between amino acids.
         
@@ -56,7 +56,7 @@ class AminoAcidBuilder:
         Returns:
             torch.Tensor: Adjacency matrix representing connections between amino acids.
         """
-        return AminoAcidUtils.util_amino_acid_adjacency_matrix(sequence, device, architecture)
+        return AminoAcidUtils.util_amino_acid_adjacency_matrix(sequence, device, architecture, amino_acid_library)
     
     @staticmethod
     def builder_amino_acid_features(sequence, amino_acid_library, device):

@@ -128,9 +128,10 @@ class AminoAcidUtils:
         return amino_acid_fragments_vector
     
     @staticmethod
-    def util_amino_acid_adjacency_matrix(sequence, device, architecture):
+    def util_amino_acid_adjacency_matrix(sequence, device, architecture, amino_acid_library):
         """
         Constructs an adjacency matrix for a peptide sequence, representing linear connections between amino acids.
+        Do not include modifications as amino acids, only the amino acids themselves (valid_characters).
         Args:
             sequence (str): Peptide sequence string.
             device (torch.device): Device to store the resulting tensor (e.g., 'cpu' or 'cuda').
@@ -148,7 +149,26 @@ class AminoAcidUtils:
         
         sequence = sequence.replace('\u200b', '').replace(' ', '')
         characters = PeptideUtils.util_extract_characters(sequence)
-        num_amino_acids= len(characters)
+        
+        valid_characters = []
+
+        for char in characters:
+            exception_value = amino_acid_library[char][2]
+            
+            if exception_value == '':  # si está vacío, se agrega
+                valid_characters.append(char)
+            else:
+                try:
+                    exception_value_int = int(float(exception_value))
+                except ValueError:
+                    continue  # ignorar valores inválidos
+                # Agregar si no es 3 ni 4
+                if exception_value_int not in (3, 4):
+                    valid_characters.append(char)
+
+        num_amino_acids = len(valid_characters)
+        
+        num_amino_acids = len(valid_characters)
         
         if num_amino_acids == 0:
             raise ValueError("Input sequence is empty or contains no valid amino acids.")
