@@ -38,7 +38,7 @@ class Smiles2Peptide:
         self.dictionary = aa_dict_instance.as_dict()
         
         self.amino_acids = aa_dict_instance.get_all_amino_acids_notations()
-        self.master_peptide = ['{ac}' + 'HRKIFLWAMPCNVGSQYDET' + '{am}']  # Master peptide sequence composed of L-amino acids, including N-terminal acetylation ({ac}) and C-terminal amidation ({am}). These modifications are important if you want to account for terminal groups in the atomic-level features.
+        self.master_peptide = ['{ac}' + 'PHRKIFLWAMCNVGSQYDET' + '{am}']  # Master peptide sequence composed of L-amino acids, including N-terminal acetylation ({ac}) and C-terminal amidation ({am}). These modifications are important if you want to account for terminal groups in the atomic-level features.
 
         
     def _build_amino_acids_mol(self):
