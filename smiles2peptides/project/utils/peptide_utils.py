@@ -155,7 +155,7 @@ class PeptideUtils:
             atom_features["aromaticity"].extend([int(atom.GetIsAromatic()) for atom in aa_mol.GetAtoms()])
             atom_features["num_bonds"].extend([atom.GetDegree() for atom in aa_mol.GetAtoms()])
             atom_features["bonded_hydrogens"].extend([atom.GetTotalNumHs() for atom in aa_mol.GetAtoms()])
-            atom_features["hybridization"].extend([atom.GetHybridization().real for atom in aa_mol.GetAtoms()])
+            atom_features["hybridization"].extend([str(atom.GetHybridization()) for atom in aa_mol.GetAtoms()])
             atom_features["implicit_valence"].extend([atom.GetImplicitValence() for atom in aa_mol.GetAtoms()])
             # Bond features
             for bond in aa_mol.GetBonds():
@@ -255,7 +255,7 @@ class PeptideUtils:
         aromaticity = [int(atom.GetIsAromatic()) for atom in mol.GetAtoms()]
         num_bonds = [atom.GetDegree() for atom in mol.GetAtoms()]
         bonded_hydrogens = [atom.GetTotalNumHs() for atom in mol.GetAtoms()]
-        hybridization = [atom.GetHybridization().real for atom in mol.GetAtoms()]
+        hybridization = [str(atom.GetHybridization()) for atom in mol.GetAtoms()]
         implicit_valence = [atom.GetImplicitValence() for atom in mol.GetAtoms()]
         
         node_keys_features = [
