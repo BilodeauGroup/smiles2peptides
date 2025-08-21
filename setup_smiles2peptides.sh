@@ -9,13 +9,13 @@ source $(conda info --base)/etc/profile.d/conda.sh
 conda activate smiles2peptides
 echo "[INFO] Environment activated."
 
-echo "[INFO] Installing RDKit from conda-forge/label/cf202003..."
-pip install rdkit
+echo "[INFO] Installing RDKit from conda-forge..."
+conda install -y -c conda-forge rdkit
 
-echo "[INFO] Installing PyTorch from:..."
-pip3 install torch torchvision
+echo "[INFO] Installing PyTorch..."
+pip install torch torchvision
 
-echo "[INFO] Installing Openpyxl from anaconda..."
+echo "[INFO] Installing Openpyxl..."
 pip install openpyxl
 
 echo "[INFO] Installing scikit-learn..."
@@ -24,10 +24,10 @@ pip install scikit-learn
 echo "[INFO] Installing ipykernel..."
 pip install ipykernel
 
-echo "[INFO] Installing pandas...
+echo "[INFO] Installing pandas..."
 pip install pandas
 
 echo "[INFO] Installing smiles2peptides package from GitHub..."
 pip install git+https://github.com/BilodeauGroup/smiles2peptides.git
 
-echo "[INFO] Setup complete. You have now the 'smiles2peptides' environment ready to use."
+echo "[INFO] Setup complete. The 'smiles2peptides' environment is ready to use."
