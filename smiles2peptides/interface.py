@@ -40,7 +40,7 @@ class Smiles2Peptide:
         self.amino_acids = aa_dict_instance.get_all_amino_acids_notations()
         #Master peptide sequences often have N-terminal modifications (PEG2 or acetylation) and C-terminal amidation.
         #These modifications can affect terminal groups and the hybridization, consequently the node features.
-        self.master_peptides = ['{ac}PHRKIFLWAMCNVGSQYDET{am}', '{PEG2}PHRKIFLWAMCNVGSQYDET{am}'] 
+        self.master_peptides = ['{ac}PHRKIFLWAMCNVGSQYDET{am}', ] #TODO : ADD THIS TO THE EXCEL FILE '{PEG2}PHRKIFLWAMCNVGSQYDET{am}'
         
     def _build_amino_acids_mol(self):
         """ 
@@ -54,6 +54,7 @@ class Smiles2Peptide:
             mol = self.peptide_builder.builder_peptide(
                                                         sequence=aa,
                                                         show_display=False,
+                                                        peptide_type='linear',
                                                         amino_acid_library=self.dictionary
                                                     )
             amino_acids_mol.append(mol)
@@ -97,11 +98,11 @@ class Smiles2Peptide:
         This method extracts atomic features from the molecule and converts them into PyTorch tensors.
         It uses the peptide builder to obtain the atomic features and then converts them into tensors.
         This is useful for preparing molecular data for machine learning models or graph neural networks.
-
+        
         Args:
             mol (rdkit.Chem.Mol): RDKit molecule object.
             device (str, optional): Device to place the tensors on. Default is 'cpu'.
-
+        
         Returns:
             tuple: A tuple containing two tensors:
                 - atom_features_tensors: Tensor of shape [num_atoms, feature_dim] for atomic features.
@@ -141,18 +142,22 @@ class Smiles2Peptide:
         print(f"  - Feature dimension: {bond_features.shape[1]}")
     
     
-    def get_peptide(self, sequence, plot_peptide=False):
+    def get_peptide(self, sequence, plot_peptide=False, peptide_type='linear'):
         """
         Build a peptide molecule from a sequence.
+        This method constructs an RDKit molecule from a peptide sequence, allowing for visualization if desired.
+        It uses the peptide builder to create the molecule and can optionally display it.   
         
         Args:
             sequence (str): Peptide sequence.
             show_display (bool): Whether to visualize the molecule.
+            peptide_type (str): Type of peptide ('linear' or 'cycle'). Default is 'linear'.
         
         Returns:
             Chem.Mol: RDKit molecule.
         """
-        return self.peptide_builder.builder_peptide(sequence, plot_peptide, amino_acid_library=self.dictionary)
+        return self.peptide_builder.builder_peptide(sequence, plot_peptide, peptide_type, amino_acid_library=self.dictionary)
+    
     
     def get_peptide_atomic_adjacency_matrix(self, mol, device='cpu'):
         """
@@ -190,19 +195,19 @@ class Smiles2Peptide:
         """
         return self.amino_acid_builder.builder_amino_acid_mapping_vector(mol, device)
     
-    def get_amino_acid_adjacency_matrix(self, sequence, device, architecture):
+    def get_amino_acid_adjacency_matrix(self, sequence, device, peptide_type):
         """
         Get an adjacency matrix for the peptide sequence.
         
         Args:
             sequence (str): Peptide sequence.
             device (torch.device): Device for the resulting tensor. Default is 'cpu'.
-            architecture (str): Type of adjacency matrix ('linear' or 'cyclic').
+            architecture (str): Type of adjacency matrix ('linear' or 'cycle').
         
         Returns:
             torch.Tensor: Adjacency matrix.
         """
-        return self.amino_acid_builder.builder_amino_acid_adjacency_matrix(sequence, device, architecture, amino_acid_library=self.dictionary)
+        return self.amino_acid_builder.builder_amino_acid_adjacency_matrix(sequence, device, peptide_type, amino_acid_library=self.dictionary)
     
     def get_amino_acid_features(self, sequence, device='cpu'):
         """

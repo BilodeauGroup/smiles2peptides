@@ -10,7 +10,8 @@ class PeptideBuilder:
     Optionally displays a visual representation of the resulting molecule.
     """   
     @staticmethod
-    def builder_peptide(sequence, show_display, amino_acid_library):
+    def builder_peptide(sequence, show_display, peptide_type, amino_acid_library):
+        
         sequence = sequence.replace('\u200b', '').replace(' ', '')
         characters = PeptideUtils.util_extract_characters(sequence)
         
@@ -33,7 +34,7 @@ class PeptideBuilder:
             
             if exception_value == 3:
                 special_smile = amino_acid_library[character][1]
-                next_smile, new_i = PeptideUtils.util_handle_special_case(character, i, characters, special_smile, amino_acid_library)
+                next_smile, new_i = PeptideUtils.util_handle_modifications(character, i, characters, special_smile, amino_acid_library)
                 concatenated_smile += next_smile
                 i = new_i  
             elif exception_value == 4:
@@ -50,12 +51,15 @@ class PeptideBuilder:
         
         concatenated_smile = concatenated_smile.replace('\u200b', '').replace(' ', '')
         
+        if peptide_type == 'cycle':
+            concatenated_smile = PeptideUtils.util_forming_cycle(concatenated_smile, characters) 
+        
         if sequence.startswith("{FITC-Ahx}"):
             editable = Chem.EditableMol(Chem.MolFromSmiles(concatenated_smile))
             editable.RemoveBond(3, 4)
             editable.AddBond(3, 5, order=Chem.rdchem.BondType.SINGLE)
             mol = editable.GetMol()
-            
+        
         else:
             mol = Chem.MolFromSmiles(concatenated_smile)
         

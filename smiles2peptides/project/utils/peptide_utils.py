@@ -60,12 +60,11 @@ class PeptideUtils:
                 smile = smile.replace("[NH1:1]", "[N:1]", 1)
             elif smile.startswith("[NH3:1]"):
                 smile = smile.replace("[NH3:1]", "[NH2:1]", 1)
-            
 
         return smile
     
     @staticmethod
-    def util_handle_special_case(character, index, characters, special_smile, dictionary):
+    def util_handle_modifications(character, index, characters, special_smile, dictionary):
         """
         Handles special SMILES modifications (e.g., PEG, acetyl groups) at N-terminus or mid-chain.
         
@@ -108,7 +107,38 @@ class PeptideUtils:
             else:
                 raise ValueError(
                     f"The SMILE of the character '{characters[index - 1]}' does not start with a valid N-terminus group.")
-                
+    
+    @staticmethod
+    def util_forming_cycle(smile, characters):
+        """
+        Adjusts the SMILES string for cyclic peptides by ensuring proper nitrogen and oxygen handling.
+        Args:
+            smile (str): Input SMILES string.
+            characters (list): List of characters in the sequence.
+        Returns:
+            str: Modified SMILES string for cyclic peptides.    
+        
+        """
+        if smile.startswith("[N:1]") and characters[0] is not None:
+            print(f"Warning: The amino acidS '{characters[0]}' and '{characters[-1]}' cannot form a peptide bond please check the Hidrogens saturation.")
+            
+        if smile.startswith("[NH2:1]"):
+            smile = smile.replace("[NH2:1]", "[NH1:1]9", 1)
+        elif smile.startswith("[NH2]"):
+            smile = smile.replace("[NH2]", "[NH1]9", 1)
+        elif smile.startswith("[NH1:1]"):
+            smile = smile.replace("[NH1:1]", "[N:1]9", 1)
+        elif smile.startswith("[NH3:1]"):
+            smile = smile.replace("[NH3:1]", "[NH2:1]9", 1)
+        
+        if smile.endswith("O"):
+            smile = smile.rsplit("O", 1)[0] + "9"
+        
+        else:
+            print(f"Warning: The amino acid '{characters[-1]}'does not end with an oxygen atom, please check the structure.")
+        
+        return smile
+    
     @staticmethod
     def util_show_molecule(mol):
         drawer = Draw.MolDraw2DCairo(800, 800)
@@ -301,13 +331,26 @@ class PeptideUtils:
             nodes_features (torch.Tensor): Tensor of shape [num_nodes, node_feature_dim].
             edges_features (torch.Tensor): Tensor of shape [num_edges, edge_feature_dim].
         """
+        
+        
         missing_node_keys = [key for key in node_keys_features if key not in node_ft_dict]
         missing_edge_keys = [key for key in edge_key_features if key not in edge_ft_dict]
-
+        
         if missing_node_keys:
-            raise KeyError(f"Missing node keys in node_ft_dict: {missing_node_keys}")
+            raise KeyError(
+                f"Missing node keys: {missing_node_keys}. "
+                "Node features not found in the library follow this format: "
+                "{atomic_number}_{aromatic_atom_flag}_{number_of_bonds}_{number_of_hydrogens}_{hybridization}_{implicit_valence}. "
+                "Please add examples for the missing keys."
+            )
+        
         if missing_edge_keys:
-            raise KeyError(f"Missing edge keys in edge_ft_dict: {missing_edge_keys}")
+            raise KeyError(
+                f"Missing edge keys: {missing_edge_keys}. "
+                "Edge features not found in the library follow this format: "
+                "{bond_type}_{in_ring_flag}_{conjugated}_{aromatic_flag}_{valence_contribution_to_atom_i}_{valence_contribution_to_atom_f}. "
+                "Please add examples for the missing keys."
+            )
         
         nodes_features = torch.tensor(
                                         np.array([node_ft_dict[key] for key in node_keys_features]),

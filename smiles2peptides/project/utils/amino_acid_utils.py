@@ -128,7 +128,7 @@ class AminoAcidUtils:
         return amino_acid_fragments_vector
     
     @staticmethod
-    def util_amino_acid_adjacency_matrix(sequence, device, architecture, amino_acid_library):
+    def util_amino_acid_adjacency_matrix(sequence, device, peptide_type, amino_acid_library):
         """
         Constructs an adjacency matrix for a peptide sequence, representing linear connections between amino acids.
         Do not include modifications as amino acids, only the amino acids themselves (valid_characters).
@@ -151,7 +151,7 @@ class AminoAcidUtils:
         characters = PeptideUtils.util_extract_characters(sequence)
         
         valid_characters = []
-
+        
         for char in characters:
             exception_value = amino_acid_library[char][2]
             
@@ -165,7 +165,7 @@ class AminoAcidUtils:
                 # Agregar si no es 3 ni 4
                 if exception_value_int not in (3, 4):
                     valid_characters.append(char)
-
+        
         num_amino_acids = len(valid_characters)
         
         num_amino_acids = len(valid_characters)
@@ -173,13 +173,13 @@ class AminoAcidUtils:
         if num_amino_acids == 0:
             raise ValueError("Input sequence is empty or contains no valid amino acids.")
         
-        if architecture == 'linear':
+        if peptide_type == 'linear':
             edges = []
             for i in range(num_amino_acids - 1):
                 edges.append((i, i + 1))
             graph_edges = [[x[0] for x in edges], [x[1] for x in edges]]
         
-        elif architecture == 'cyclic':
+        elif peptide_type == 'cycle':
             edges = []
             for i in range(num_amino_acids - 1):
                 edges.append((i, i + 1))
@@ -191,7 +191,7 @@ class AminoAcidUtils:
         #TODO: Staples?
         
         else:
-            raise ValueError(f"Unknown architecture: {architecture}")
+            raise ValueError(f"Unknown architecture: {peptide_type}")
         
         return torch.tensor(graph_edges, dtype=torch.long, device = device) 
     
