@@ -24,7 +24,7 @@ class Smiles2Peptide:
         
         # Build the amino acids molecules from the dictionary
         self.amino_acids_mol = self._build_amino_acids_mol()
-        # Calcula y guarda los features como atributos
+        # Precompute atomic features for the amino acid library
         atomic_nodes_features, atomic_edge_features = self.peptide_builder.builder_atomic_features(self.amino_acids_mol)
         self.library_atomic_nodes_features = atomic_nodes_features
         self.library_atomic_edge_features = atomic_edge_features
@@ -38,9 +38,6 @@ class Smiles2Peptide:
         self.dictionary = aa_dict_instance.as_dict()
         
         self.amino_acids = aa_dict_instance.get_all_amino_acids_notations()
-        #Master peptide sequences often have N-terminal modifications (PEG2 or acetylation) and C-terminal amidation.
-        #These modifications can affect terminal groups and the hybridization, consequently the node features.
-        self.master_peptides = ['{ac}PHRKIFLWAMCNVGSQYDET{am}', ] #TODO : ADD THIS TO THE EXCEL FILE '{PEG2}PHRKIFLWAMCNVGSQYDET{am}'
         
     def _build_amino_acids_mol(self):
         """ 
@@ -49,8 +46,7 @@ class Smiles2Peptide:
             list: List of RDKit molecule objects for each amino acid.
         """ 
         amino_acids_mol = []
-        
-        for aa in (self.master_peptides+self.amino_acids):
+        for aa in (self.amino_acids):
             mol = self.peptide_builder.builder_peptide(
                                                         sequence=aa,
                                                         show_display=False,
